@@ -70,9 +70,13 @@ public class GetProxyMain {
 			
 			Collections.list(request.getHeaderNames())
 				.stream()
+				.filter(name -> !name.equalsIgnoreCase("host"))
 				.forEach(name -> {
 					get.addHeader(name, request.getHeader(name));
 				});
+
+			// add Host header
+			get.addHeader("Host", base.substring(base.indexOf('/')+2));
 			
 			try(CloseableHttpResponse resp = httpclient.execute(get)) {
 				writeToFile(file, resp);
@@ -83,6 +87,9 @@ public class GetProxyMain {
 	}
 
 	static void writeToFile(File f, CloseableHttpResponse resp) throws IOException {
+		if (resp.getStatusLine().getStatusCode() != 200) {
+			return; // skip saving errors
+		}
 		try(BufferedOutputStream os = new BufferedOutputStream(new FileOutputStream(f))) {
 			copy(resp.getEntity().getContent(), os);
 			os.flush();
