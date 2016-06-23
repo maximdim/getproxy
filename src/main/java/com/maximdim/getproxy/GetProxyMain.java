@@ -22,8 +22,11 @@ import org.apache.http.impl.client.HttpClients;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GetProxyMain {
+  static final Logger logger = LoggerFactory.getLogger(GetProxyMain.class);
 	static final File DIR = new File(System.getProperty("user.home"), ".getproxy");
 	
 	public static void main(String[] args) throws Exception {
@@ -34,7 +37,7 @@ public class GetProxyMain {
 		
 		if (!DIR.exists()) {
 			DIR.mkdir();
-			System.out.println(DIR.getAbsolutePath()+" created");
+			logger.info("{} created", DIR.getAbsolutePath());
 		}
 		
         Server server = new Server(9999);
@@ -58,11 +61,10 @@ public class GetProxyMain {
 				response.sendError(400, "Only GET requests supported");
 				return;
 			}
-			System.out.println(target);
 			
 			File file = new File(DIR, DigestUtils.sha1Hex(target));
 			if (readFromFile(file, response)) {
-				System.out.println("Served cached version: "+file.getAbsolutePath());
+			  logger.info("{} return from {}", target, file.getName());
 				return;
 			}
 			
@@ -81,7 +83,7 @@ public class GetProxyMain {
 			try(CloseableHttpResponse resp = httpclient.execute(get)) {
 				writeToFile(file, resp);
 			}
-			System.out.println("Saved to cache: "+file.getAbsolutePath());
+			logger.info("{} saved to {}", target, file.getName());
 			readFromFile(file, response);
 		}
 	}
