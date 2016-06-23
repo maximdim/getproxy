@@ -40,7 +40,7 @@ public class GetProxyMain {
         Server server = new Server(9999);
         server.setHandler(new Handler(args[0]));
         server.start();
-        server.dumpStdErr();
+        //server.dumpStdErr();
         server.join();		
 	}
 	
