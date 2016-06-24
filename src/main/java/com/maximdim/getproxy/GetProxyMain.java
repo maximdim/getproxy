@@ -30,8 +30,8 @@ public class GetProxyMain {
 	static final File DIR = new File(System.getProperty("user.home"), ".getproxy");
 	
 	public static void main(String[] args) throws Exception {
-		if (args.length != 1) {
-			System.err.println("Usage: "+GetProxyMain.class.getSimpleName()+" <targetUrl>");
+		if (args.length != 2) {
+			System.err.println("Usage: "+GetProxyMain.class.getSimpleName()+" <local port> <targetUrl>");
 			System.exit(1);
 		}
 		
@@ -40,8 +40,8 @@ public class GetProxyMain {
 			logger.info("{} created", DIR.getAbsolutePath());
 		}
 		
-        Server server = new Server(9999);
-        server.setHandler(new Handler(args[0]));
+        Server server = new Server(Integer.parseInt(args[0]));
+        server.setHandler(new Handler(args[1]));
         server.start();
         //server.dumpStdErr();
         server.join();		
